@@ -1,2 +1,26 @@
 <p>This is <a href="http://example.com/" title="Title">an example</a> inline link.</p>
 <p><a href="http://example.net/">This link</a> has no title attribute.</p>
+<p>This is a <ac:link>
+    <ri:page ri:content-title="wiki page"/>
+    <ac:plain-text-link-body>
+        <![CDATA[wiki page]]>
+    </ac:plain-text-link-body>
+</ac:link> link.</p>
+<p>This is a link to certain <ac:link ac:anchor="node-01">
+    <ri:page ri:content-title="a new page"/>
+    <ac:plain-text-link-body>
+        <![CDATA[wiki page]]>
+    </ac:plain-text-link-body>
+</ac:link>.</p>
+<p>And we have <ac:link>
+    <ri:attachment ri:filename="attatchment.jpg" />
+    <ac:plain-text-link-body>
+        <![CDATA[links to attachment]]>
+    </ac:plain-text-link-body>
+</ac:link>.</p>
+<p>We do support using images like this: <ac:link>
+    <ri:page ri:content-title="image page"/>
+    <ac:image>            
+        <ri:attachment ri:filename="image.jpg" />
+    </ac:image>                
+</ac:link>.</p>

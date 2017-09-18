@@ -1,3 +1,11 @@
+Confluence Hack Copyright (c) 2017, Steve Yang
+<http://yyang.me>
+All rights reserved.
+
+Confluence Storage Format Copyright (c) 2017, Atlassian
+<https://confluence.atlassian.com/doc/confluence-storage-format-790796544.html>
+All rights reserved.
+
 Showdown Copyright (c) 2007, John Fraser
 <http://www.attacklab.net/>
 All rights reserved.

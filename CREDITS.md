@@ -1,5 +1,8 @@
 Credits
 =======
+  - Confluence Hack
+    * [Steve Yang](http://yyang.me)
+
   - Showdown v1
     * [Estevão Santos](https://github.com/tivie)
     * [Pascal Deschênes](https://github.com/pdeschen)

@@ -5,7 +5,7 @@ showdown.subParser('strikethrough', function (text, options, globals) {
     if (options.simplifiedAutoLink) {
       txt = showdown.subParser('simplifiedAutoLinks')(txt, options, globals);
     }
-    return '<del>' + txt + '</del>';
+    return '<span style="text-decoration: line-through;">' + txt + '</span>';
   }
 
   if (options.strikethrough) {

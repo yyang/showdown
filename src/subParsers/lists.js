@@ -12,7 +12,7 @@ showdown.subParser('lists', function (text, options, globals) {
    * @param {boolean} trimTrailing
    * @returns {string}
    */
-  function processListItems (listStr, trimTrailing) {
+  function processListItems (listStr, trimTrailing, listType) {
     // The $g_list_level global keeps track of when we're inside a list.
     // Each time we enter a list, we increment it; when we leave a list,
     // we decrement. If it's zero, we're not in a list anymore.
@@ -54,21 +54,7 @@ showdown.subParser('lists', function (text, options, globals) {
     listStr = listStr.replace(rgx, function (wholeMatch, m1, m2, m3, m4, taskbtn, checked) {
       checked = (checked && checked.trim() !== '');
 
-      var item = showdown.subParser('outdent')(m4, options, globals),
-          bulletStyle = '';
-
-      // Support for github tasklists
-      if (taskbtn && options.tasklists) {
-        bulletStyle = ' class="task-list-item" style="list-style-type: none;"';
-        item = item.replace(/^[ \t]*\[(x|X| )?]/m, function () {
-          var otp = '<input type="checkbox" disabled style="margin: 0px 0.35em 0.25em -1.6em; vertical-align: middle;"';
-          if (checked) {
-            otp += ' checked';
-          }
-          otp += '>';
-          return otp;
-        });
-      }
+      var item = showdown.subParser('outdent')(m4, options, globals);
 
       // ISSUE #312
       // This input: - - - a
@@ -103,10 +89,19 @@ showdown.subParser('lists', function (text, options, globals) {
         }
       }
 
+
       // now we need to remove the marker (¨A)
       item = item.replace('¨A', '');
-      // we can finally wrap the line in list item tags
-      item =  '<li' + bulletStyle + '>' + item + '</li>\n';
+
+      // Support for github tasklists
+      if (listType === 'ac:task-list' && options.tasklists) {
+        var status = '    <ac:task-status>' + (!taskbtn ? 'incomplete' : checked ? 'complete' : 'incomplete') + '</ac:task-status>\n';
+        var body = '    <ac:task-body>' + item.replace(/^[ \t]*\[(x|X| )?][ \t]?/m, '') + '</ac:task-body>\n';
+        item =  '  <ac:task>\n' + status + body + '  </ac:task>\n';
+      } else {
+        // we can finally wrap the line in list item tags
+        item =  '<li>' + item + '</li>\n';
+      }
 
       return item;
     });
@@ -135,15 +130,15 @@ showdown.subParser('lists', function (text, options, globals) {
     // we use the counterRgx, meaning if listType is UL we look for OL and vice versa
     var olRgx = (options.disableForced4SpacesIndentedSublists) ? /^ ?\d+\.[ \t]/gm : /^ {0,3}\d+\.[ \t]/gm,
         ulRgx = (options.disableForced4SpacesIndentedSublists) ? /^ ?[*+-][ \t]/gm : /^ {0,3}[*+-][ \t]/gm,
-        counterRxg = (listType === 'ul') ? olRgx : ulRgx,
+        counterRxg = (listType === 'ul') ? olRgx : (listType === 'ol') ? ulRgx : null,
         result = '';
 
-    if (list.search(counterRxg) !== -1) {
+    if (counterRxg && list.search(counterRxg) !== -1) {
       (function parseCL (txt) {
         var pos = txt.search(counterRxg);
         if (pos !== -1) {
           // slice
-          result += '\n<' + listType + '>\n' + processListItems(txt.slice(0, pos), !!trimTrailing) + '</' + listType + '>\n';
+          result += '\n<' + listType + '>\n' + processListItems(txt.slice(0, pos), !!trimTrailing, listType) + '</' + listType + '>\n';
 
           // invert counterType and listType
           listType = (listType === 'ul') ? 'ol' : 'ul';
@@ -152,11 +147,11 @@ showdown.subParser('lists', function (text, options, globals) {
           //recurse
           parseCL(txt.slice(pos));
         } else {
-          result += '\n<' + listType + '>\n' + processListItems(txt, !!trimTrailing) + '</' + listType + '>\n';
+          result += '\n<' + listType + '>\n' + processListItems(txt, !!trimTrailing, listType) + '</' + listType + '>\n';
         }
       })(list);
     } else {
-      result = '\n<' + listType + '>\n' + processListItems(list, !!trimTrailing) + '</' + listType + '>\n';
+      result = '\n<' + listType + '>\n' + processListItems(list, !!trimTrailing, listType) + '</' + listType + '>\n';
     }
 
     return result;
@@ -167,16 +162,16 @@ showdown.subParser('lists', function (text, options, globals) {
   text += '¨0';
 
   if (globals.gListLevel) {
-    text = text.replace(/^(( {0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(¨0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/gm,
-      function (wholeMatch, list, m2) {
-        var listType = (m2.search(/[*+-]/g) > -1) ? 'ul' : 'ol';
+    text = text.replace(/^(( {0,3}([*+-]|\d+[.])([ \t]\[[xX ]?])?[ \t]+)[^\r]+?(¨0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/gm,
+      function (wholeMatch, list, m2, m3, m4) {
+        var listType = m4 ? 'ac:task-list' : (m2.search(/[*+-]/g) > -1) ? 'ul' : 'ol';
         return parseConsecutiveLists(list, listType, true);
       }
     );
   } else {
-    text = text.replace(/(\n\n|^\n?)(( {0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(¨0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/gm,
-      function (wholeMatch, m1, list, m3) {
-        var listType = (m3.search(/[*+-]/g) > -1) ? 'ul' : 'ol';
+    text = text.replace(/(\n\n|^\n?)(( {0,3}([*+-]|\d+[.])([ \t]\[[xX ]?])?[ \t]+)[^\r]+?(¨0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/gm,
+      function (wholeMatch, m1, list, m3, m4, m5) {
+        var listType = m5 ? 'ac:task-list' : (m3.search(/[*+-]/g) > -1) ? 'ul' : 'ol';
         return parseConsecutiveLists(list, listType, false);
       }
     );

@@ -1,14 +1,16 @@
 {
-  "name": "showdown",
+  "name": "showdown-confluence",
   "version": "1.7.4",
-  "description": "A Markdown to HTML converter written in Javascript",
-  "author": "Estevão Santos",
-  "homepage": "http://showdownjs.github.io/showdown/",
+  "description": "A Markdown to Confluence Storage Format converter written in Javascript, based on Showdown",
+  "author": "Steve Yang",
+  "homepage": "http://yyang.me/",
   "keywords": [
     "markdown",
-    "converter"
+    "converter",
+    "confluence"
   ],
   "contributors": [
+    "Steve Yang",
     "John Gruber",
     "John Fraser",
     "Corey Innis",
@@ -27,16 +29,16 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/showdownjs/showdown.git",
-    "web": "https://github.com/showdownjs/showdown"
+    "url": "https://github.com/yyang/showdown-confluence.git",
+    "web": "https://github.com/yyang/showdown-confluence"
   },
   "license": "BSD-3-Clause",
-  "main": "./dist/showdown.js",
+  "main": "./dist/showdown-confluence.js",
   "scripts": {
     "test": "grunt test"
   },
   "bin": {
-    "showdown": "bin/showdown.js"
+    "showdown": "bin/showdown-confluence.js"
   },
   "devDependencies": {
     "chai": "^4.0.2",

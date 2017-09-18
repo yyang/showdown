@@ -54,6 +54,58 @@ showdown.subParser('anchors', function (text, options, globals) {
     return result;
   };
 
+  var writeWikiAnchorTag = function (wholeMatch, prefix, linkText, pageTitle, pageAnchor, attachmentName) {
+    var linkTarget = '',
+        linkBody = '',
+        link = '';
+
+    // Handles traditional case
+    // [Google|www.google.com]
+    var strictUrlRgx = /^((?:https?:)?\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+    var urlRgx = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+    var mailtoRgx = /^mailto\:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+
+    if (urlRgx.test(pageTitle) || mailtoRgx.test(pageTitle)) {
+      return prefix + writeAnchorTag(wholeMatch, linkText, '', pageTitle);
+    } else if (urlRgx.test(linkText) || mailtoRgx.test(linkText)) {
+      return prefix + writeAnchorTag(wholeMatch, linkText, '', linkText);
+    }
+
+    // Compose Link Target
+    // <ri:attachment ri:filename="atlassian_logo.gif" />
+    // <ri:page ri:content-title="pagetitle"/>
+    if (attachmentName) {
+      linkTarget = '<ri:attachment ri:filename="' + attachmentName + '" />';
+    } else {
+      linkTarget = '<ri:page ri:content-title="' + (pageTitle || linkText) + '"/>';
+    }
+
+    // Compose Link Body
+    if (/^!.+!$/.test(linkText)) {
+      var image = /^!(.+)!$/.exec(linkText)[1];
+
+      linkBody += '<ac:image>\n';
+      if (strictUrlRgx.test(image)) {
+        linkBody += '<ri:url ri:value="' + image + '" />\n';
+      } else {
+        linkBody += '<ri:attachment ri:filename="' + image + '" />\n';
+      }
+      linkBody += '</ac:image>';
+    } else {
+      linkBody = '<ac:plain-text-link-body>\n  <![CDATA[' + linkText + ']]>\n</ac:plain-text-link-body>';
+    }
+
+    // Compose Link
+    if (pageAnchor) {
+      link += '<ac:link ac:anchor="' + pageAnchor + '">\n';
+    } else {
+      link += '<ac:link>\n';
+    }
+    link += linkTarget + '\n' + linkBody + '\n</ac:link>';
+
+    return prefix + link;
+  };
+
   // First, handle reference-style links: [link text] [id]
   text = text.replace(/\[((?:\[[^\]]*]|[^\[\]])*)] ?(?:\n *)?\[(.*?)]()()()()/g, writeAnchorTag);
 
@@ -66,10 +118,13 @@ showdown.subParser('anchors', function (text, options, globals) {
   text = text.replace(/\[((?:\[[^\]]*]|[^\[\]])*)]()[ \t]*\([ \t]?<?([\S]+?(?:\([\S]*?\)[\S]*?)?)>?(?:[ \t]*((["'])([^"]*?)\5))?[ \t]?\)/g,
                       writeAnchorTag);
 
-  // handle reference-style shortcuts: [link text]
+  // handle confluence wiki style shortcuts:
+  //   [link text|page name#anchor] or
+  //   [link text|www.google.com] or
+  //   [attachment link^attachmentname.zip]
   // These must come last in case you've also got [link test][1]
   // or [link test](/foo)
-  text = text.replace(/\[([^\[\]]+)]()()()()()/g, writeAnchorTag);
+  text = text.replace(/(^|[^!])\[([^|#\^\]]{2,})(?:(?:\|([^|#\^]+)(?:#([^|#\^\]]+))?)|\^([^|#\^\]]+))?]/g, writeWikiAnchorTag);
 
   // Lastly handle GithubMentions if option is enabled
   if (options.ghMentions) {

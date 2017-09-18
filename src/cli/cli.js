@@ -26,7 +26,7 @@ yargs
   })
   .usage('Usage: showdown <command> [options]')
   .demand(1, 'You must provide a valid command')
-  .command('makehtml', 'Converts markdown into html')
+  .command('makehtml', 'Converts markdown into confluence storage format')
   .example('showdown makehtml -i foo.md -o bar.html', 'Converts \'foo.md\' to \'bar.html\'')
   .wrap(yargs.terminalWidth());
 

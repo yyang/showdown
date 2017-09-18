@@ -11,26 +11,21 @@
 ------
 
 Showdown is a Javascript Markdown to HTML converter, based on the original works by John Gruber.
-Showdown can be used client side (in the browser) or server side (with NodeJs).
 
-## Live DEMO
+Showdown-Confluence is a hack based on the Showdown project, it converts Markdown to Confluence Storage Format, an Atlassian flavoured XHTML.
 
-Check a live Demo here http://showdownjs.github.io/demo/
+## Major Differences (from Markdown and Showdown)
 
+* Supports strikethrough by default;
+* Supports Confluence emoticons;
+* Supports Confluence flavoured links, images and task lists;
+* Supports links to certain page and anchor, or links to attachments;
 
-## Who uses Showdown (or a fork)
+For all differences please refer [compare.md].
 
- - [GoogleCloudPlatform](https://github.com/GoogleCloudPlatform)
- - [Ghost](https://ghost.org/)
- - [Meteor](https://www.meteor.com/)
- - [Stackexchange](http://stackexchange.com/) - forked as [PageDown](https://code.google.com/p/pagedown/)
- - [docular](https://github.com/Vertafore/docular)
- - [and some others...](https://www.npmjs.com/browse/depended/showdown)
+## Original Project
 
-## Donate [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/tiviesantos)
-
-We're currently looking to improve showdown with automated tests in all browsers and a proper domain and webpage.
-[If you like our work, please donate!!](https://www.paypal.me/tiviesantos) Your contribution will be greatly appreciated.
+Check for original showdown project http://showdownjs.github.io/showdown/
 
 ## Installation
 
@@ -51,19 +46,6 @@ You can download the latest release tarball directly from [releases][releases]
     PM> Install-Package showdownjs
 
 The NuGet Packages can be [found here](https://www.nuget.org/packages/showdownjs/).
-
-### CDN
-
-You can also use one of several CDNs available: 
-
-* github CDN
-
-        https://cdn.rawgit.com/showdownjs/showdown/<version tag>/dist/showdown.min.js
-
-* cdnjs
-
-        https://cdnjs.cloudflare.com/ajax/libs/showdown/<version tag>/showdown.min.js
-
 
 ## Browser Compatibility
 

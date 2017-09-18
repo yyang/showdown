@@ -34,6 +34,8 @@ describe('makeHtml() features testsuite', function () {
         converter = new showdown.Converter({ghCodeBlocks: false});
       } else if (testsuite[i].name === '#164.4.tasklists') {
         converter = new showdown.Converter({tasklists: true});
+      } else if (testsuite[i].name === '#164.5.tasklists-fake') {
+        converter = new showdown.Converter({tasklists: true});
       } else if (testsuite[i].name === '#198.literalMidWordUnderscores-changes-behavior-of-asterisk') {
         converter = new showdown.Converter({literalMidWordUnderscores: true});
       } else if (testsuite[i].name === '#259.es6-template-strings-indentation-issues') {

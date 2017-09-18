@@ -59,26 +59,58 @@ showdown.subParser('images', function (text, options, globals) {
       .replace(showdown.helper.regexes.asteriskAndDash, showdown.helper.escapeCharactersCallback);
     //url = showdown.helper.escapeCharacters(url, '*_', false);
     url = url.replace(showdown.helper.regexes.asteriskAndDash, showdown.helper.escapeCharactersCallback);
-    var result = '<img src="' + url + '" alt="' + altText + '"';
 
-    if (title) {
-      title = title
-        .replace(/"/g, '&quot;')
-      //title = showdown.helper.escapeCharacters(title, '*_', false);
-        .replace(showdown.helper.regexes.asteriskAndDash, showdown.helper.escapeCharactersCallback);
-      result += ' title="' + title + '"';
+    var result = '';
+    if (/^data:.+?\/.+?;base64,/.test(url)) {
+      // Using standard <img> tag for base64
+      result += '<img src="' + url + '" alt="' + altText + '"';
+
+      if (title) {
+        title = title
+          .replace(/"/g, '&quot;')
+        //title = showdown.helper.escapeCharacters(title, '*_', false);
+          .replace(showdown.helper.regexes.asteriskAndDash, showdown.helper.escapeCharactersCallback);
+        result += ' title="' + title + '"';
+      }
+
+      if (width && height) {
+        width  = (width === '*') ? 'auto' : width;
+        height = (height === '*') ? 'auto' : height;
+
+        result += ' width="' + width + '"';
+        result += ' height="' + height + '"';
+      }
+
+      result += ' />';
+    } else {
+      result += '<ac:image ac:alt="' + altText + '"';
+
+      if (title) {
+        title = title
+          .replace(/"/g, '&quot;')
+        //title = showdown.helper.escapeCharacters(title, '*_', false);
+          .replace(showdown.helper.regexes.asteriskAndDash, showdown.helper.escapeCharactersCallback);
+        result += ' ac:title="' + title + '"';
+      }
+
+      if (width && height) {
+        width  = (width === '*') ? 'auto' : width;
+        height = (height === '*') ? 'auto' : height;
+
+        result += ' ac:width="' + width + '"';
+        result += ' ac:height="' + height + '"';
+      }
+
+      result += '>';
+
+      if (url.search(/\/\/.{3,}\..{2,}/) > -1) {
+        result += '<ri:url ri:value="' + url + '" />';
+      } else {
+        result += '<ri:attachment ri:filename="' + url + '" />';
+      }
+
+      result += '</ac:image>';
     }
-
-    if (width && height) {
-      width  = (width === '*') ? 'auto' : width;
-      height = (height === '*') ? 'auto' : height;
-
-      result += ' width="' + width + '"';
-      result += ' height="' + height + '"';
-    }
-
-    result += ' />';
-
     return result;
   }
 
