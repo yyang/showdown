@@ -1,6 +1,6 @@
 {
   "name": "showdown-confluence",
-  "version": "1.7.4",
+  "version": "1.7.4a",
   "description": "A Markdown to Confluence Storage Format converter written in Javascript, based on Showdown",
   "author": "Steve Yang",
   "homepage": "http://yyang.me/",

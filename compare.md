@@ -47,6 +47,18 @@ The following features are supported by _Confluence Storage Format_ but optional
     3. `[link name|page name#anchor]` will use Confluence Storage Format and link to page with name `page name` and jump to anchor `anchor`;
     4. Additionally, link to attachments are supported via `[attatchment link^attachment-name.zip]`, and it will also use the Confluence Storage Format to find such attatchment.
     5. Image syntax like `[!image.jpg!|image page]` is supported and will use `image.jpg` from space attatchment. Moreover, we can use external file.
+* Additionally, JIRA links are supported through specific link syntax, aka [JIRA:PROJ-123]. This is enabled through the following settings:
+    - Add `jiraLink` option while initiating converter instance.
+
+The _jiraLink_ option:
+
+```lang=javascript:
+converter.setOption('jiraLink', {
+  macroId: '00000000-0000-0000-0000-000000000000',
+  jiraServer: 'JIRA Server',
+  jiraServerId: '11111111-1111-1111-1111-111111111111'
+});
+```
 
 #### 9. Images
 * Markdown Supported: Yes

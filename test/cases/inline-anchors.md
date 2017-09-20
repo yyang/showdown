@@ -10,3 +10,5 @@ This is a link to certain [wiki page|a new page#node-01].
 And we have [links to attachment^attatchment.jpg].
 
 We do support using images like this: [!image.jpg!|image page].
+
+And we support JIRA Issues as well [JIRA:PROJ-123].

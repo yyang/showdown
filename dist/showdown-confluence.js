@@ -1,4 +1,4 @@
-;/*! showdown-confluence v 1.7.4 - 18-09-2017 */
+;/*! showdown-confluence v 1.7.4 - 19-09-2017 */
 (function(){
 /**
  * Created by Tivie on 13-07-2015.
@@ -1429,6 +1429,16 @@ showdown.subParser('anchors', function (text, options, globals) {
       return prefix + writeAnchorTag(wholeMatch, linkText, '', pageTitle);
     } else if (urlRgx.test(linkText) || mailtoRgx.test(linkText)) {
       return prefix + writeAnchorTag(wholeMatch, linkText, '', linkText);
+    }
+
+    // Filters JIRA Issues
+    if (options.jiraLink && /^JIRA:[A-Za-z]+\-\d+$/.test(linkText)) {
+      var issueId = /^JIRA:([A-Za-z]+\-\d+)$/.exec(linkText)[1];
+      return prefix + '<ac:structured-macro ac:name="jira" ac:schema-version="1" ac:macro-id="' + options.jiraLink.macroId + '">' +
+             '<ac:parameter ac:name="server">' + options.jiraLink.jiraServer + '</ac:parameter>' +
+             '<ac:parameter ac:name="columns">key,summary,type,created,updated,due,assignee,reporter,priority,status,resolution</ac:parameter>' +
+             '<ac:parameter ac:name="serverId">' + options.jiraLink.jiraServerId + '</ac:parameter>' +
+             '<ac:parameter ac:name="key">' + issueId + '</ac:parameter>' + '</ac:structured-macro>';
     }
 
     // Compose Link Target
